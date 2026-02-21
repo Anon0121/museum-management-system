@@ -7,41 +7,70 @@ const mysql = require('mysql2/promise');
 // Check if using Railway DATABASE_URL (internal Railway database)
 const useRailwayInternal = process.env.DATABASE_URL && process.env.DATABASE_URL.includes('railway.app');
 
-const poolConfig = useRailwayInternal ? {
-  // Railway internal database configuration
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'museosmart',
-  port: process.env.DB_PORT || 3306,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-  // Valid mysql2 pool options
-  acquireTimeout: 60000, // Time to wait for a connection from the pool (in milliseconds)
-  enableKeepAlive: true,
-  keepAliveInitialDelay: 0,
-  // Add query timeout to prevent early failures
-  connectTimeout: 60000, // Connection timeout in milliseconds
-  // Note: mysql2 doesn't support queryTimeout directly, but we can set it per query
-} : {
+// Parse DATABASE_URL if available
+let dbConfig;
+if (useRailwayInternal && process.env.DATABASE_URL) {
+  // Parse Railway DATABASE_URL
+  try {
+    const dbUrl = new URL(process.env.DATABASE_URL);
+    dbConfig = {
+      host: dbUrl.hostname,
+      user: dbUrl.username,
+      password: dbUrl.password,
+      database: dbUrl.pathname.substring(1), // Remove leading slash
+      port: dbUrl.port || 3306,
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0,
+      acquireTimeout: 60000,
+      enableKeepAlive: true,
+      keepAliveInitialDelay: 0,
+      connectTimeout: 60000,
+      ssl: {
+        rejectUnauthorized: false
+      }
+    };
+  } catch (error) {
+    console.error('❌ Error parsing DATABASE_URL:', error.message);
+    // Fallback to individual variables
+    dbConfig = {
+      host: process.env.DB_HOST || 'localhost',
+      user: process.env.DB_USER || 'root',
+      password: process.env.DB_PASSWORD || '',
+      database: process.env.DB_NAME || 'museosmart',
+      port: process.env.DB_PORT || 3306,
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0,
+      acquireTimeout: 60000,
+      enableKeepAlive: true,
+      keepAliveInitialDelay: 0,
+      connectTimeout: 60000,
+      ssl: {
+        rejectUnauthorized: false
+      }
+    };
+  }
+} else {
   // Local MySQL configuration
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'museosmart',
-  port: process.env.DB_PORT || 3306,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-  // Valid mysql2 pool options
-  acquireTimeout: 60000, // Time to wait for a connection from the pool (in milliseconds)
-  enableKeepAlive: true,
-  keepAliveInitialDelay: 0,
-  // Add query timeout to prevent early failures
-  connectTimeout: 60000, // Connection timeout in milliseconds
-  // Note: mysql2 doesn't support queryTimeout directly, but we can set it per query
-};
+  dbConfig = {
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'museosmart',
+    port: process.env.DB_PORT || 3306,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+    acquireTimeout: 60000,
+    enableKeepAlive: true,
+    keepAliveInitialDelay: 0,
+    connectTimeout: 60000,
+    ssl: {
+      rejectUnauthorized: false
+    }
+  };
+}
 
 console.log(`🔧 Database Config: ${useRailwayInternal ? 'Railway Internal' : 'Local MySQL'}`);
 
