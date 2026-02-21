@@ -13,9 +13,9 @@ const localConfig = {
 // Railway MySQL configuration
 const railwayConfig = {
   host: 'crossover.proxy.rlwy.net',
-  user: 'root',
+  user: process.env.DB_USER || 'your-railway-username', // Usually not 'root' for external access
   password: process.env.DB_PASSWORD || 'your-railway-password',
-  database: 'railway',
+  database: process.env.DB_NAME || 'railway',
   port: 55517,
   ssl: {
     rejectUnauthorized: false

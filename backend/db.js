@@ -4,16 +4,16 @@ if (process.env.NODE_ENV !== 'production') {
 
 const mysql = require('mysql2/promise');
 
-// Check if using Railway (Railway host detected)
-const useRailway = process.env.DB_HOST && process.env.DB_HOST.includes('rlwy.net');
+// Check if using Railway DATABASE_URL (internal Railway database)
+const useRailwayInternal = process.env.DATABASE_URL && process.env.DATABASE_URL.includes('railway.app');
 
-const poolConfig = useRailway ? {
-  // Railway MySQL configuration
-  host: process.env.DB_HOST || 'crossover.proxy.rlwy.net',
+const poolConfig = useRailwayInternal ? {
+  // Railway internal database configuration
+  host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'railway',
-  port: process.env.DB_PORT || 55517,
+  database: process.env.DB_NAME || 'museosmart',
+  port: process.env.DB_PORT || 3306,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
@@ -24,10 +24,6 @@ const poolConfig = useRailway ? {
   // Add query timeout to prevent early failures
   connectTimeout: 60000, // Connection timeout in milliseconds
   // Note: mysql2 doesn't support queryTimeout directly, but we can set it per query
-  // SSL for Railway
-  ssl: {
-    rejectUnauthorized: false
-  }
 } : {
   // Local MySQL configuration
   host: process.env.DB_HOST || 'localhost',
@@ -47,7 +43,7 @@ const poolConfig = useRailway ? {
   // Note: mysql2 doesn't support queryTimeout directly, but we can set it per query
 };
 
-console.log(`🔧 Database Config: ${useRailway ? 'Railway MySQL' : 'Local MySQL'}`);
+console.log(`🔧 Database Config: ${useRailwayInternal ? 'Railway Internal' : 'Local MySQL'}`);
 
 const pool = mysql.createPool(poolConfig);
 
