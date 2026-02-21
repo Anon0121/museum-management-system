@@ -18,14 +18,14 @@ if (useRailwayInternal && process.env.DATABASE_URL) {
       user: dbUrl.username,
       password: dbUrl.password,
       database: dbUrl.pathname.substring(1), // Remove leading slash
-      port: dbUrl.port || 3306,
+      port: 3306,  // Use standard MySQL port
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,
-      acquireTimeout: 60000,
+      acquireTimeout: 10000, // 10 seconds timeout
       enableKeepAlive: true,
       keepAliveInitialDelay: 0,
-      connectTimeout: 60000,
+      connectTimeout: 10000, // 10 seconds timeout
       ssl: {
         rejectUnauthorized: false
       }
