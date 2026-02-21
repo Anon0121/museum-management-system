@@ -1,10 +1,7 @@
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
-}
-
+// Railway internal database configuration
 const mysql = require('mysql2/promise');
 
-// Check if using Railway internal database variables
+// Check if using Railway internal database
 const useRailwayInternal = process.env.RAILWAY_MYSQL_NAME || process.env.RAILWAY_MYSQL_USERNAME;
 
 const poolConfig = useRailwayInternal ? {
