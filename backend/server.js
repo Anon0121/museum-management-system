@@ -8,11 +8,45 @@ const fs = require('fs');
 
 // Safe database import with fallback
 let pool = null;
-try {
-  pool = require('./db');
-} catch (error) {
-  console.error('❌ Database module not loaded:', error.message);
+let dbConnected = false;
+
+// Initialize database connection asynchronously
+async function initDatabase() {
+  try {
+    console.log('🔗 Initializing database connection...');
+    pool = require('./db');
+    
+    // Test connection
+    const connection = await pool.getConnection();
+    await connection.ping();
+    connection.release();
+    
+    dbConnected = true;
+    console.log('✅ Database connected successfully');
+    
+  } catch (error) {
+    console.error('❌ Database connection failed:', error.message);
+    console.error('❌ Error Code:', error.code);
+    
+    // Specific Railway error diagnosis
+    if (error.code === 'ENOTFOUND') {
+      console.error('🔧 FIX: Cannot find MySQL host. Check RAILWAY_MYSQL_HOST variable.');
+    } else if (error.code === 'ECONNREFUSED') {
+      console.error('🔧 FIX: Connection refused. Check port (should be 3306) and MySQL service status.');
+    } else if (error.code === 'ER_ACCESS_DENIED_ERROR') {
+      console.error('🔧 FIX: Access denied. Check username/password in environment variables.');
+    } else if (error.code === 'ETIMEDOUT') {
+      console.error('🔧 FIX: Connection timeout. Check network and firewall settings.');
+    }
+    
+    // Don't crash the server - continue without database
+    console.log('⚠️  Starting server without database connection...');
+    dbConnected = false;
+  }
 }
+
+// Initialize database
+initDatabase();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -242,9 +276,14 @@ app.post('/api/create-user', isAuthenticated, async (req, res) => {
     const hashedPassword = await hashPassword(password);
     
     // Insert user into database with hashed password and permissions
-    const sql = `INSERT INTO system_user (username, firstname, lastname, email, password, role, status, permissions)
-                 VALUES (?, ?, ?, ?, ?, ?, 'active', ?)`;
-    await pool.query(sql, [username, firstname, lastname, email, hashedPassword, role, JSON.stringify(permissions || {})]);
+    const sql = `INSERT INTO system_user (username, firstname, lastname, email, password, role, status)
+                 VALUES (?, ?, ?, ?, ?, ?, 'active')`;
+    
+    if (!dbConnected) {
+      return res.status(503).json({ success: false, message: 'Database not available' });
+    }
+    
+    await pool.query(sql, [username, firstname, lastname, email, hashedPassword, role]);
     
     // Get the inserted user ID
     const [result] = await pool.query(`SELECT user_ID FROM system_user WHERE username = ?`, [username]);
@@ -321,6 +360,10 @@ app.post('/api/create-user', isAuthenticated, async (req, res) => {
 // ✅ Login
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
+
+  if (!dbConnected) {
+    return res.status(503).json({ success: false, message: 'Database not available' });
+  }
 
   try {
     const [results] = await pool.query(`SELECT * FROM system_user WHERE username = ?`, [username]);
