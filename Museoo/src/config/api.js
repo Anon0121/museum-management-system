@@ -7,7 +7,7 @@ const getBackendURL = () => {
 
   // If accessing from Vercel (production), use Railway backend
   if (window.location.hostname.includes('vercel.app')) {
-    return 'https://museum-management-system-production-9f37.up.railway.app';
+    return 'https://museum-management-system-production-2361.up.railway.app';
   }
 
   // If accessing from ngrok, use ngrok backend
