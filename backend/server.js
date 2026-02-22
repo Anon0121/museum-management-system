@@ -9,7 +9,7 @@ const fs = require('fs');
 // Safe database import with fallback
 let pool = null;
 try {
-  pool = require('./db-safe');
+  pool = require('./db');
 } catch (error) {
   console.error('❌ Database module not loaded:', error.message);
 }
