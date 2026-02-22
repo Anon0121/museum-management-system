@@ -3,7 +3,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "node debug-server.js",
+    "startCommand": "node basic-server.js",
     "healthcheckPath": "/api/health"
   }
 }
