@@ -5,7 +5,14 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const https = require('https');
 const fs = require('fs');
-const pool = require('./db'); // Import the pool from db.js
+
+// Safe database import with fallback
+let pool = null;
+try {
+  pool = require('./db-safe');
+} catch (error) {
+  console.error('❌ Database module not loaded:', error.message);
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
