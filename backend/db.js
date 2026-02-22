@@ -32,11 +32,11 @@ const poolConfig = useRailwayInternal ? {
       };
     })() : {
       // Fallback to individual Railway variables
-      host: process.env.RAILWAY_MYSQL_HOST || 'yamabiko.proxy.rlwy.net',
+      host: process.env.RAILWAY_MYSQL_HOST || 'mysql.railway.internal',
       user: process.env.RAILWAY_MYSQL_USERNAME || 'root',
       password: process.env.RAILWAY_MYSQL_PASSWORD || 'VzuVdcJENLoTsSOnbhhsoZrEAZtdmWlE',
       database: process.env.RAILWAY_MYSQL_NAME || 'railway',
-      port: process.env.RAILWAY_MYSQL_PORT || 41347,
+      port: process.env.RAILWAY_MYSQL_PORT || 3306,
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,
