@@ -79,11 +79,26 @@ pool.getConnection()
     connection.release();
   })
   .catch(err => {
-    console.error('❌ Database connection error:', err.message);
-    console.log('\n🔧 To fix this:');
-    console.log('1. Make sure MySQL is installed and running');
-    console.log('2. Check your .env or environment variables');
-    console.log('3. Make sure the database exists and credentials are correct');
+    console.error('❌ DATABASE CONNECTION ERROR:', err.message);
+    console.error('❌ Error Code:', err.code);
+    console.error('❌ Error Details:', err);
+    
+    // Specific Railway error diagnosis
+    if (err.code === 'ENOTFOUND') {
+      console.error('🔧 FIX: Cannot find MySQL host. Check RAILWAY_MYSQL_HOST variable.');
+    } else if (err.code === 'ECONNREFUSED') {
+      console.error('🔧 FIX: Connection refused. Check port (should be 3306) and MySQL service status.');
+    } else if (err.code === 'ER_ACCESS_DENIED_ERROR') {
+      console.error('🔧 FIX: Access denied. Check username/password in environment variables.');
+    } else if (err.code === 'ETIMEDOUT') {
+      console.error('🔧 FIX: Connection timeout. Check network and firewall settings.');
+    }
+    
+    console.log('\n🔧 Current Database Config:');
+    console.log('Host:', poolConfig.host);
+    console.log('Port:', poolConfig.port);
+    console.log('User:', poolConfig.user);
+    console.log('Database:', poolConfig.database);
   });
 
 module.exports = pool;
