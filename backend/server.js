@@ -154,32 +154,34 @@ app.use(cors({
     // Allow requests with no origin (mobile apps, Postman, etc.)
     if (!origin) return callback(null, true);
     
-    // Check against allowed origins
-    const isAllowed = allowedOrigins.some(allowed => {
-      if (allowed instanceof RegExp) {
-        return allowed.test(origin);
-      }
-      return allowed === origin;
-    });
-    
-    if (isAllowed) {
-      callback(null, true);
-    } else {
-      console.log('⚠️ Blocked origin:', origin);
-      callback(null, true); // Allow all for now - remove this in production
+    // Allow all origins in production (Railway)
+    if (process.env.NODE_ENV === 'production') {
+      return callback(null, true);
     }
+    
+    // Check if origin is in allowed list
+    if (allowedOrigins.some(allowed => origin.includes(allowed))) {
+      return callback(null, true);
+    }
+    
+    // Default to localhost for development
+    if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+      return callback(null, true);
+    }
+    
+    callback(new Error('Not allowed by CORS'));
   },
   credentials: true
 }));
 
-// For production, use a persistent session store (e.g., Redis) instead of MemoryStore!
+// Simple session configuration for Railway
 app.use(session({
-  secret: 'your_secret',
+  secret: process.env.SESSION_SECRET || 'railway-secret-key',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    // Removed secure and sameSite for local development
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax'
   }
 }));
 
