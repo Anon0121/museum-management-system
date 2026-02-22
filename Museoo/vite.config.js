@@ -12,5 +12,19 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     https: false
+  },
+  build: {
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+          ui: ['@fortawesome/react-fontawesome', '@fortawesome/free-solid-svg-icons', 'react-icons'],
+          utils: ['axios', 'html5-qrcode', 'docx-preview'],
+          datepicker: ['react-datepicker']
+        }
+      }
+    }
   }
 })

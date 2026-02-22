@@ -5,9 +5,9 @@ const getBackendURL = () => {
     return 'http://localhost:3000';
   }
 
-  // If accessing from Vercel (production), use Vercel backend
+  // If accessing from Vercel (production), use Railway backend
   if (window.location.hostname.includes('vercel.app')) {
-    return 'https://backend-8bycrtvhf-julianas-projects-638cf11e.vercel.app';
+    return 'https://museum-management-system-production-9f37.up.railway.app';
   }
 
   // If accessing from ngrok, use ngrok backend

@@ -9,18 +9,19 @@ const useRailwayInternal = process.env.RAILWAY_MYSQL_NAME || process.env.RAILWAY
 
 const poolConfig = useRailwayInternal ? {
   // Railway internal database configuration
-  host: process.env.RAILWAY_MYSQL_HOST || 'containers-us-west-1.railway.app',
+  host: process.env.RAILWAY_MYSQL_HOST || 'yamabiko.proxy.rlwy.net',
   user: process.env.RAILWAY_MYSQL_USERNAME || 'root',
-  password: process.env.RAILWAY_MYSQL_PASSWORD || '',
+  password: process.env.RAILWAY_MYSQL_PASSWORD || 'VzuVdcJENLoTsSOnbhhsoZrEAZtdmWlE',
   database: process.env.RAILWAY_MYSQL_NAME || 'railway',
-  port: process.env.RAILWAY_MYSQL_PORT || 3306,
+  port: process.env.RAILWAY_MYSQL_PORT || 41347,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  acquireTimeout: 10000,
+  acquireTimeout: 20000,
   enableKeepAlive: true,
   keepAliveInitialDelay: 0,
-  connectTimeout: 10000,
+  connectTimeout: 20000,
+  timeout: 20000,
   ssl: {
     rejectUnauthorized: false
   }

@@ -963,10 +963,19 @@ setTimeout(() => {
   setInterval(autoCancelExpiredBookings, 60 * 60 * 1000); // Every hour
 }, 5000); // Wait 5 seconds after server starts
 
-// Start HTTP server
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
+// Start server
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
-  console.log(`🌐 External access: http://192.168.1.9:${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🌐 Local access: http://localhost:${PORT}`);
   console.log(`📱 Mobile access: http://192.168.1.9:${PORT}`);
   console.log(`⏰ Auto-cancel job scheduled: runs every hour to cancel expired unscanned bookings`);
 });

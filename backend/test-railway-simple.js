@@ -5,12 +5,12 @@ async function testRailwaySimple() {
   console.log('🚂 Testing Railway MySQL connection (simple)...');
   
   try {
-    // Direct connection with your Railway details
+    // Direct connection with your current Railway details
     const connection = await mysql.createConnection({
-      host: 'containers-us-west-1.railway.app',
-      port: 3306,
+      host: 'yamabiko.proxy.rlwy.net',
+      port: 41347,
       user: 'root',
-      password: 'r5A8k7v4M2C5w9',
+      password: 'VzuVdcJENLoTsSOnbhhsoZrEAZtdmWlE',
       database: 'railway',
       ssl: {
         rejectUnauthorized: false
